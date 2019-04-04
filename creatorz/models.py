@@ -3,6 +3,7 @@ import logging
 from django.db import models
 from django.utils.timezone import now
 from django.urls import reverse
+from django_rq import enqueue
 
 logger = logging.getLogger()
 

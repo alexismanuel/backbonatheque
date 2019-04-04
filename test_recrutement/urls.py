@@ -26,5 +26,6 @@ api_router.register(r'writer', WriterViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(api_router.urls + major_router.urls))
+    path('api/', include(api_router.urls + major_router.urls)),
+    path('django-rq/', include('django_rq.urls'))
 ]
