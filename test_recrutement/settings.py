@@ -59,7 +59,7 @@ ROOT_URLCONF = 'test_recrutement.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['creatorz'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

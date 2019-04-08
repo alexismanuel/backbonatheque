@@ -3,10 +3,10 @@ import logging
 from django.db import models
 from django.utils.timezone import now
 from django.urls import reverse
-from django_rq import enqueue
+from django_rq import enqueue, get_queue
 
 logger = logging.getLogger()
-
+QUEUE_NAME = 'default'
 
 class Customer(models.Model):
     firstname = models.TextField()
@@ -47,12 +47,23 @@ class Album(models.Model):
             status = "STOP"
         playback = self.playbacks.create(customer=customer, status=status)
         remote_url = "http://localhost:8000" + reverse("major-playback-list")
+
+        self.add_to_playback(playback, remote_url)
+       
+    def add_to_playback(self, playback, remote_url):
+        """Call remote API to add a new playback. On timeout, the request is added to a queue to be further processed without interrupting the app"""
         try:
             response = requests.post(remote_url, json=playback.serialize(), timeout=1)
             if response.status_code != 201:
                 logger.exception("Error occured")
         except Exception as e:
-            logger.exception("Timeout occured")
+            # On exception, adding failed request to queue in order to further process jobs in a async way
+            self.add_to_queue(playback, remote_url)
+
+    def add_to_queue(self, playback, remote_url):
+        """Add remote calling task to queue. Implementation here is using RQ for minimalism matter but
+         it can be changed to other implementations like Celery"""
+        get_queue(QUEUE_NAME).enqueue(self.add_to_playback, playback, remote_url)
 
 
 class Playback(models.Model):

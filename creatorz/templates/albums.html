@@ -1,0 +1,13 @@
+{% load static %}
+
+{% if album_list %}
+    <ul>
+    {% for album in album_list %}
+        <li>{{ album.title }}<button onclick="onPlayPress(1, {{ album.id }})">Play</button></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No albums are available.</p>
+{% endif %}
+
+<script> const onPlayPress = (customer_id, album_id) => fetch(customer_id+'/'+album_id+'/play')</script>

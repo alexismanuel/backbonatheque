@@ -18,6 +18,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from creatorz.api import MusicianViewSet, WriterViewSet
 from major.urls import major_router
+from creatorz.views import albums, play
 
 api_router = DefaultRouter()
 api_router.register(r'musician', MusicianViewSet)
@@ -27,5 +28,7 @@ api_router.register(r'writer', WriterViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(api_router.urls + major_router.urls)),
-    path('django-rq/', include('django_rq.urls'))
+    path('django-rq/', include('django_rq.urls')),
+    path('albums', albums),
+    path('<int:customer_id>/<int:album_id>/play/', play)
 ]
