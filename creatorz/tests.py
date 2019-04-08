@@ -1,5 +1,5 @@
 from django.test import TestCase
-
+from django_rq import get_queue, enqueue
 
 
 class TestApi(TestCase):
@@ -70,3 +70,8 @@ class TestApi(TestCase):
             "instrument": "357 Magnum",
             "agent": 2
         })
+
+    def test_add_playback_to_queue(self):
+        queue = get_queue(async=False)
+        self.assertEqual(queue.enqueue(lambda x: x+1, 0), 1)
+
