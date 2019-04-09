@@ -12,7 +12,6 @@ class MusicianViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MusicianSerialiser
     queryset = Musician.objects.all()
 
-
 class WriterViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = WriterSerialiser
     queryset = Writer.objects.all()

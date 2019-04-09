@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.urls import reverse
 from django_rq import enqueue, get_queue
+from major.api import MajorException
 
 logger = logging.getLogger()
 QUEUE_NAME = 'default'
@@ -56,6 +57,8 @@ class Album(models.Model):
             response = requests.post(remote_url, json=playback.serialize(), timeout=1)
             if response.status_code != 201:
                 logger.exception("Error occured")
+        except MajorException as m:
+            logger.exception("MAJOR EXCEPTION")
         except Exception as e:
             # On exception, adding failed request to queue in order to further process jobs in a async way
             self.add_to_queue(playback, remote_url)
@@ -98,3 +101,21 @@ class Book(models.Model):
     description = models.TextField()
     publication_date = models.DateField()
     writer = models.ForeignKey(Writer, null=True, blank=True, on_delete=models.SET_NULL, related_name="books")
+
+class PlayError(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+    status = models.CharField(max_length=100, choices=(
+        ("START", "Customer starts playing"),
+        ("STOP", "Customer stops playing"),
+    ))
+    playback = models.ForeignKey(Playback, on_delete=models.PROTECT, related_name="play_errors")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="play_errors")
+    album = models.ForeignKey(Album, on_delete=models.PROTECT, related_name="play_errors")
+
+    def serialize(self):
+        return {
+            "status": self.status,
+            "playback": self.playback_id,
+            "customer": self.customer_id,
+            "album": self.album_id,
+        }

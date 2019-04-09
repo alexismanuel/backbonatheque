@@ -20,6 +20,7 @@ class MajorPlaybackView(viewsets.ModelViewSet):
         customer = self.request.data.get('customer')
         last_play = MajorPlayback.objects.filter(customer=customer, album=album).order_by("-pk").first()
         # Validators
+        raise MajorException
         if not last_play and status == "STOP":
             raise MajorException
         if last_play and last_play.status == status:
