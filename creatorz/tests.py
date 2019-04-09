@@ -71,7 +71,13 @@ class TestApi(TestCase):
             "agent": 2
         })
 
-    def test_add_playback_to_queue(self):
-        queue = get_queue(async=False)
-        self.assertEqual(queue.enqueue(lambda x: x+1, 0), 1)
+    def test_get_customers(self):
+        response = self.client.get("/api/customers/")
+        results = response.json()
+        self.assertDictEqual(results[0], {
+            "id": 1,
+            "firstname": "John",
+            "lastname": "Dope",
+        })
+
 
