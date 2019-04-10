@@ -1,11 +1,6 @@
 from rest_framework import viewsets
-from .serializers import MusicianSerialiser
-from .serializers import WriterSerialiser
-from .serializers import CustomerSerialiser
-
-from .models import Musician
-from .models import Writer
-from .models import Customer
+from .serializers import MusicianSerialiser, WriterSerialiser, CustomerSerialiser, PlayErrorSerialiser
+from .models import Musician, Writer, Customer, PlayError
 
 
 class MusicianViewSet(viewsets.ReadOnlyModelViewSet):
@@ -19,3 +14,7 @@ class WriterViewSet(viewsets.ReadOnlyModelViewSet):
 class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CustomerSerialiser
     queryset = Customer.objects.all()
+
+class PlayErrorViewSet(viewsets.ModelViewSet):
+    serializer_class = PlayErrorSerialiser
+    queryset = PlayError.objects.all()
