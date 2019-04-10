@@ -28,5 +28,5 @@ When you're ready for review, create a PR against the original repo. We'll check
 ## Alexis MANUEL - Work done
 
 - Timeout handling: To enable user to continue interaction with the front-end on timed out requests, a simple front using asynchronous toggle_playing method call was implemented in vanilla JS. Furthermore, the method is using django-rq as a queue to further process failed remote API call. RQ was chosen in order to build a prototype fast but Celery is also a solid choice.
-- Error storage: TODO
+- Error storage: On error response from remote server, it is stored in the PlayError model which stores playback errors. This way, it is fairly straightforward to get all errors by simply calling one entity (the route api/play_errors is implemented to do so)
 - Restart failed operations: TODO
