@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.urls import reverse
 from django_rq import enqueue, get_queue
+from major.api import MajorException
 
 logger = logging.getLogger()
 QUEUE_NAME = 'default'
@@ -55,9 +56,12 @@ class Album(models.Model):
         try:
             response = requests.post(remote_url, json=playback.serialize(), timeout=1)
             if response.status_code != 201:
-                logger.exception("Error occured")
+                # Store the toggle_playing error response as a PlayError entity
+                PlayError.objects.create(remote_url=remote_url, playback=playback)
+                
+                
         except Exception as e:
-            # On exception, adding failed request to queue in order to further process jobs in a async way
+            # On exception (like timeouts), adding failed request to queue in order to further process jobs in a async way
             self.add_to_queue(playback, remote_url)
 
     def add_to_queue(self, playback, remote_url):
@@ -98,3 +102,14 @@ class Book(models.Model):
     description = models.TextField()
     publication_date = models.DateField()
     writer = models.ForeignKey(Writer, null=True, blank=True, on_delete=models.SET_NULL, related_name="books")
+
+class PlayError(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+    remote_url = models.TextField()
+    playback = models.ForeignKey(Playback, on_delete=models.PROTECT, related_name="play_errors")
+    
+    def serialize(self):
+        return {
+            "remote_url": self.remote_url,
+            "playback": self.playback_id
+        }
