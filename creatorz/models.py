@@ -104,6 +104,7 @@ class Book(models.Model):
     writer = models.ForeignKey(Writer, null=True, blank=True, on_delete=models.SET_NULL, related_name="books")
 
 class PlayError(models.Model):
+    """ Model to store an error from remote API call in Album.toggle_playing method """
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
     remote_url = models.TextField()
     playback = models.ForeignKey(Playback, on_delete=models.PROTECT, related_name="play_errors")
